@@ -45,9 +45,20 @@ func (q *Queries) CreateURL(ctx context.Context, arg CreateURLParams) (Url, erro
 	return i, err
 }
 
+const deleteURLExpired = `-- name: DeleteURLExpired :exec
+DELETE FROM urls 
+WHERE expires_at <= current_timestamp
+`
+
+func (q *Queries) DeleteURLExpired(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteURLExpired)
+	return err
+}
+
 const getURLByShortCode = `-- name: GetURLByShortCode :one
 SELECT id, original_url, short_url, is_custom, expires_at, created_at FROM urls 
 WHERE short_url = $1
+AND expires_at > current_timestamp
 `
 
 func (q *Queries) GetURLByShortCode(ctx context.Context, shortUrl string) (Url, error) {

@@ -14,4 +14,10 @@ SELECT NOT EXISTS (
 
 -- name: GetURLByShortCode :one
 SELECT * FROM urls 
-WHERE short_url = $1;
+WHERE short_url = $1
+AND expires_at > current_timestamp;
+
+-- name: DeleteURLExpired :exec
+DELETE FROM urls 
+WHERE expires_at <= current_timestamp;
+

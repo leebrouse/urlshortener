@@ -18,6 +18,13 @@ type URLHandler struct {
 	urlservice URLservice
 }
 
+// NewURLHandler 创建新的URL处理器
+func NewURLHandler(urlService URLservice) *URLHandler {
+	return &URLHandler{
+		urlservice: urlService,
+	}
+}
+
 // POST /api/url original_url,custom_code,duration=> 短链接，过期时间
 func (h *URLHandler) CreateURL(c echo.Context) error {
 	//数据提取

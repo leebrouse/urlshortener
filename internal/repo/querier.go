@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	CreateURL(ctx context.Context, arg CreateURLParams) (Url, error)
+	DeleteURLExpired(ctx context.Context) error
 	GetURLByShortCode(ctx context.Context, shortUrl string) (Url, error)
 	IsShortCodeAvailable(ctx context.Context, shortUrl string) (bool, error)
 }

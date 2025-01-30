@@ -6,11 +6,26 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/goccy/go-json"
+	"githum.com/leebrouse/urlshortener/config"
 	"githum.com/leebrouse/urlshortener/internal/repo"
 )
 
 type RedisCache struct {
 	client *redis.Client
+}
+
+func NewRedisCache(cfg config.RedisConfig) (*RedisCache,error) {
+	client:=redis.NewClient(&redis.Options{
+		Addr: cfg.Address,
+		Password: cfg.Password,
+		DB: cfg.DB,
+	})
+
+	if err:=client.Ping(context.Background()).Err();err!=nil{
+		return nil,err
+	}
+
+	return &RedisCache{client: client},nil
 }
 
 func (c *RedisCache) SetURL(ctx context.Context, url repo.Url) error {
@@ -41,4 +56,8 @@ func (c *RedisCache) GetURL(ctx context.Context, shortCode string) (*repo.Url, e
 
 	return &url, nil
 
+}
+
+func (c *RedisCache) Close() error {
+	return c.client.Close()
 }

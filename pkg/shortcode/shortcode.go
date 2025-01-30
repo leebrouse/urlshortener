@@ -1,9 +1,19 @@
 package shortcode
 
-import "math/rand"
+import (
+	"math/rand"
+
+	"githum.com/leebrouse/urlshortener/config"
+)
 
 type ShortCode struct {
 	length int
+}
+
+func NewShortCode(cfg config.ShortCodeConfig) *ShortCode {
+	return &ShortCode{
+		length: cfg.Length,
+	}
 }
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

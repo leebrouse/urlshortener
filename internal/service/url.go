@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -24,6 +25,16 @@ type URLService struct {
 	defaultDuration     time.Duration
 	cache               Cacher
 	baseURL             string
+}
+
+func NewURLService(db *sql.DB,shortCodeGenerateor ShortCodeGenerator,defaultDuration time.Duration,cache Cacher,baseURL string) *URLService {
+	return &URLService{
+		querier:             repo.New(db),
+		shortCodeGenerateor: shortCodeGenerateor,
+		defaultDuration:     defaultDuration,
+		cache:               cache,
+		baseURL:             baseURL,
+	}
 }
 
 func (s *URLService) CreateURL(ctx context.Context, req model.CreateURLRequest) (*model.CreateURLResponse, error) {
@@ -51,7 +62,7 @@ func (s *URLService) CreateURL(ctx context.Context, req model.CreateURLRequest) 
 		shortcode = code
 	}
 
-	if req.Duration != nil {
+	if req.Duration == nil {
 		expires_at = time.Now().Add(s.defaultDuration)
 	} else {
 		expires_at = time.Now().Add(time.Hour * time.Duration(*req.Duration))
@@ -119,4 +130,8 @@ func (s *URLService) getShortCode(ctx context.Context, n int) (string, error) {
 	}
 
 	return s.getShortCode(ctx, n+1)
+}
+
+func (s *URLService) DeleteURL(ctx context.Context) error {
+	return s.querier.DeleteURLExpired(ctx)
 }
