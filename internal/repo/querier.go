@@ -10,6 +10,8 @@ import (
 
 type Querier interface {
 	CreateURL(ctx context.Context, arg CreateURLParams) (Url, error)
+	GetURLByShortCode(ctx context.Context, shortUrl string) (Url, error)
+	IsShortCodeAvailable(ctx context.Context, shortUrl string) (bool, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -5,3 +5,13 @@ INSERT INTO urls (
         $1, $2, $3, $4
 ) 
 RETURNING *;
+
+-- name: IsShortCodeAvailable :one
+SELECT NOT EXISTS (
+    SELECT 1 FROM urls 
+    WHERE short_url = $1
+) AS available;
+
+-- name: GetURLByShortCode :one
+SELECT * FROM urls 
+WHERE short_url = $1;
